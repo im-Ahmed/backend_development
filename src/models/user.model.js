@@ -1,6 +1,8 @@
 import mongoose, { Schema, model } from "mongoose";
-import { Jwt } from "jsonwebtoken";
+import Jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import donenvx from "@dotenvx/dotenvx";
+donenvx.config();
 
 const userSchema = new Schema(
   {
@@ -49,7 +51,36 @@ const userSchema = new Schema(
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
-  this.password = bcrypt.hash(this.password,10);
+  this.password = bcrypt.hash(this.password, 10);
   next();
 });
+userSchema.method.isPasswordCorrect = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+userSchema.method.generateAccessToken = function () {
+  return Jwt.sign(
+    {
+      //Paylaod use wanted to embedded in token
+      _id: this._id,
+      email: this.email,
+      username: this.username,
+      fullName: this.fullName,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+    }
+  );
+};
+userSchema.method.generateRefreshToken = function () {
+  return Jwt.sign(
+    {
+      _id: this._id,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: REFRESH_TOKEN_EXPIRY,
+    }
+  );
+};
 export const User = model("User", userSchema);
