@@ -1,12 +1,14 @@
-const asyncHandler = (reqestHandler) => async (req, res, next) => {
-  try {
-     await reqestHandler(req, res, next);
-  } catch (err) {
-    req.status(err.code || 500).json({
-      success: false,
-      message: err.message,
-    });
-  }
+const asyncHandler = (reqestHandler) => {
+  async (req, res, next) => {
+    try {
+      await reqestHandler(req, res, next);
+    } catch (err) {
+      res.status(err.code || 500).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  };
 };
 
 /*
