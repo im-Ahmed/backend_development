@@ -1,4 +1,4 @@
-const asyncHandler = (reqestHandler) => {
+const asyncHandler = (reqestHandler) => 
   async (req, res, next) => {
     try {
       await reqestHandler(req, res, next);
@@ -9,12 +9,12 @@ const asyncHandler = (reqestHandler) => {
       });
     }
   };
-};
+
 
 /*
-    Second method using Promises instead of tryCatch
+    //Second method using Promises instead of tryCatch
 const asyncHandler = (reqestHandler)=>{
-    (req,res,next)=>{
+   return (req,res,next)=>{
         Promise.resolve(reqestHandler(req,res.next)).catch((err)=>{
             console.log("ERROR: ",err);
             next(err)
