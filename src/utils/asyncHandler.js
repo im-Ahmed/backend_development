@@ -1,6 +1,6 @@
 const asyncHandler = (reqestHandler) => async (req, res, next) => {
   try {
-    await reqestHandler(req, res, next);
+     await reqestHandler(req, res, next);
   } catch (err) {
     req.status(err.code || 500).json({
       success: false,
@@ -8,8 +8,6 @@ const asyncHandler = (reqestHandler) => async (req, res, next) => {
     });
   }
 };
-
-export { asyncHandler };
 
 /*
     Second method using Promises instead of tryCatch
@@ -22,3 +20,5 @@ const asyncHandler = (reqestHandler)=>{
     }
 
 }*/
+
+export { asyncHandler };
