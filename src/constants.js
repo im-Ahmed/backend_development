@@ -1,2 +1,2 @@
 export const DB_NAME = "vidoetube";
-export const LIMIT = "10bk";
+export const LIMIT = "10kb";
