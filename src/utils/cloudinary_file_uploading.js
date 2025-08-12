@@ -1,7 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import dotenvx from "@dotenvx/dotenvx";
-import { log } from "console";
 dotenvx.config();
 
 cloudinary.config({
@@ -10,7 +9,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const UploadOnCloudiary = async (localFilePath) => {
+const uploadOnCloudinary = async (localFilePath) => {
   try {
     if (!localFilePath) return null;
     // Upload the Image
@@ -18,7 +17,7 @@ const UploadOnCloudiary = async (localFilePath) => {
       resource_type: "auto",
     });
     // Image uploaded successfully
-    console.log("File is Uploaded successfully", response.url);
+    fs.unlinkSync(localFilePath); // remove the image from our server
     return response;
   } catch (error) {
     // Remove the temporarilly save file if the image upload got failed
@@ -27,5 +26,4 @@ const UploadOnCloudiary = async (localFilePath) => {
   }
 };
 
-
-export { UploadOnCloudiary };
+export { uploadOnCloudinary };

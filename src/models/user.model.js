@@ -54,10 +54,10 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
-userSchema.method.isPasswordCorrect = async function (password) {
+userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
-userSchema.method.generateAccessToken = function () {
+userSchema.methods.generateAccessToken = function () {
   return Jwt.sign(
     {
       //Paylaod use wanted to embedded in token
@@ -72,7 +72,7 @@ userSchema.method.generateAccessToken = function () {
     }
   );
 };
-userSchema.method.generateRefreshToken = function () {
+userSchema.methods.generateRefreshToken = function () {
   return Jwt.sign(
     {
       _id: this._id,
@@ -83,4 +83,4 @@ userSchema.method.generateRefreshToken = function () {
     }
   );
 };
-export const User = model("User", userSchema);
+export const User = mongoose.model("User", userSchema);
