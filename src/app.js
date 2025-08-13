@@ -22,7 +22,6 @@ import userRouter from "./routes/user.routes.js";
 
 // Routes declaration
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/users",userRouter)
 
 // Example: http://localhost:8000/api/v1/users/ then the route passs the controll to userRouter
 
