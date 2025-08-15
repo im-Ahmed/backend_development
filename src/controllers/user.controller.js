@@ -161,11 +161,11 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 const logoutUser = asyncHandler(async (req, res) => {
   // find user against that id and update the refresh token as undefined
-  await User.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     req.user._id,
     {
       $set: {
-        refreshToken: undefined,
+        refreshToken: null,
       },
     },
     {
@@ -181,6 +181,6 @@ const logoutUser = asyncHandler(async (req, res) => {
     .status(200)
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User looged out"));
+    .json(new ApiResponse(200, {}, "User logged out"));
 });
 export { registerUser, loginUser, logoutUser };
