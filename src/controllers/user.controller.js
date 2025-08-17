@@ -5,6 +5,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary_file_uploading.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import Jwt from "jsonwebtoken";
 import dotenvx from "@dotenvx/dotenvx";
+import { deleteFromCloudinary } from "../utils/cloudinary_file_remove.js";
 dotenvx.config();
 
 const generateAccessAndRefreshToken = async (userId) => {
@@ -122,7 +123,7 @@ const loginUser = asyncHandler(async (req, res) => {
   }
   // check for user
   const user = await User.findOne({
-    $or: [{ username }, { email }],
+    $and: [{ username }, { email }],
   });
 
   if (!user) {
@@ -290,6 +291,11 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
   if (!avatar.url) {
     throw new ApiError(500, "Error while uploading avatar to cloudinary");
   }
+  // delete old image from cloudinary
+  const URIOfOldAvatar = req.user.avatar;
+  console.log(URIOfOldAvatar);
+  await deleteFromCloudinary(URIOfOldAvatar);
+
   const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
@@ -310,10 +316,15 @@ const updateUserConverImage = asyncHandler(async (req, res) => {
   if (!coverImageLocalPath) {
     throw new ApiError(400, "cover image file is missing");
   }
+
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
   if (!coverImage.url) {
     throw new ApiError(500, "Error while uploading cover image to cloudinary");
   }
+  // delete old image from cloudinary
+  const URIOfOldcoverImage = req.user.coverImage;
+  console.log(URIOfOldcoverImage);
+  await deleteFromCloudinary(URIOfOldcoverImage);
   const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
