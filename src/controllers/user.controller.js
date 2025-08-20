@@ -341,7 +341,7 @@ const updateUserConverImage = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, user, "cover image is updated successfully"));
 });
-const getChannelDetails = asyncHandler(async (req, res) => {
+const getChannelProfile = asyncHandler(async (req, res) => {
   const { username } = req.params;
   if (!username?.trim()) {
     throw new ApiError(400, "username is missing");
@@ -469,6 +469,6 @@ export {
   updateAccountDetails,
   updateUserAvatar,
   updateUserConverImage,
-  getChannelDetails,
+  getChannelProfile,
   getWatchHistory,
 };
