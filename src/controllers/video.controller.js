@@ -138,13 +138,9 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
   }
   const updatedVideo = await Video.findByIdAndUpdate(
     videoId,
-    {
-      ispublished: !ispublished,
-    },
-    {
-      new: true,
-    }
-  );
+    [{ $set: { ispublished: { $not: "$ispublished" } } }],
+    { new: true }
+  ).select("-owner");
   if (!updatedVideo) {
     throw new ApiError(401, "Video is not founded against this Id");
   }
