@@ -9,6 +9,61 @@ import { deleteFromCloudinary } from "../utils/cloudinary_file_remove.js";
 
 const getAllVideos = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
+  if (!userId) {
+    throw new ApiError(400, "Id is missing or invalid Id in query");
+  }
+  if (!page || !limit || !query || !sortBy || !sortType) {
+    throw new ApiError(
+      400,
+      "Some of the parameter is missing from URL request"
+    );
+  }
+  let sortOrderId = 1;
+  if (sortType?.toLowerCase() === "desc") {
+    sortOrderId = -1;
+  }
+  const aggregation = Video.aggregate([
+    {
+      // get video belong to user
+      $match: { owner: new mongoose.Types.ObjectId(userId) },
+    },
+    {
+      // only those which are published
+      $match: {
+        ispublished: true,
+      },
+    },
+    {
+      // get videos those matches the query
+      $match: {
+        $or: [
+          { title: { $regex: query, $options: "i" } },
+          { description: { $regex: query, $options: "i" } },
+        ],
+      },
+    },
+    {
+      $sort: {
+        createdAt: sortOrderId,
+      },
+    },
+    {
+      $project: {
+        owner: 0,
+      },
+    },
+  ]);
+  if (!aggregation) {
+    throw new ApiError(500, "Something went wrong while getting all videos");
+  }
+  const options = {
+    page, // which page you want
+    limit, // how many per page
+  };
+  const allVideos = await Video.aggregatePaginate(aggregation, options);
+  return res
+    .status(200)
+    .json(new ApiResponse(200, allVideos, "All videos fetched successfully"));
   //TODO: get all videos based on query, sort, pagination
 });
 
