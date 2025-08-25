@@ -25,7 +25,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
       channel: channelId,
     });
 
-    let message;
+    let message, isSubscribed;
 
     if (existingSubscription) {
       // unsubscribe
@@ -34,6 +34,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
         channel: channelId,
       });
       message = "Unsubscribed successfully";
+      isSubscribed = false;
     } else {
       // subscribe
       await Subscription.create({
@@ -41,9 +42,12 @@ const toggleSubscription = asyncHandler(async (req, res) => {
         channel: channelId,
       });
       message = "Subscribed successfully";
+      isSubscribed = true;
     }
 
-    return res.status(200).json(new ApiResponse(200, {}, message));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, { channelId, isSubscribed }, message));
   } catch (err) {
     throw new ApiError(500, "Something went wrong while toggling subscription");
   }
