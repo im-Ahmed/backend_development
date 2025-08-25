@@ -203,6 +203,25 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, updatedVideo, "Video publish status changed"));
 });
 
+const handleViews = asyncHandler(async (req, res) => {
+  const { videoId } = req.params;
+  if (!videoId || videoId.length != 24) {
+    throw new ApiError(400, "Video Id is missing or an Invalid Id");
+  }
+  let message;
+  try {
+    await Video.findByIdAndUpdate(videoId, {
+      $inc: { views: 1 },
+    });
+    message = "view counted";
+  } catch (err) {
+    throw new ApiError(
+      500,
+      err.message || "Something went wrong while view counting"
+    );
+  }
+  return res.status(200).json(new ApiResponse(200, {}, message));
+});
 export {
   getAllVideos,
   publishAVideo,
@@ -210,4 +229,5 @@ export {
   updateVideo,
   deleteVideo,
   togglePublishStatus,
+  handleViews
 };
